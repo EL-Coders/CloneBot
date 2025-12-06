@@ -1,8 +1,11 @@
-import uvloop
+import asyncio  # noqa
+import uvloop  # noqa
 
-uvloop.install()
-
-import asyncio  # noqa: E402
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 from pyrogram import Client, __version__, idle  # noqa: E402
 from pyrogram.raw.all import layer  # noqa: E402
@@ -51,5 +54,9 @@ async def main():
             print(f"{user.me.first_name} - @{user.me.username}- User Stopped !!!")
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+if __name__ == "__main__":
+    try:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
+    except RuntimeError:
+        asyncio.run(main())
